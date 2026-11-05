@@ -2,6 +2,7 @@ package main
 
 import "./tap"
 import "./L2"
+import "./utils"
 import "core:os"
 import "core:log"
 
@@ -9,6 +10,8 @@ main :: proc() {
     context.logger = log.create_console_logger(.Debug)
     log.debug("Created logger")
     log.info("Initializing stack")
+    log.info("Loading config file")
+    utils.load_file()
     file, ok := tap.open_tap("/dev/net/tun")
     if !ok {
         return
