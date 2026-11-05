@@ -64,11 +64,10 @@ open_tap :: proc(dev_name: string) -> (file: ^os.File, ok: bool) {
 write_tap:: proc(payload:[]u8,strict:bool) -> (error:string) {
 	//Writes arbitrary data through the provided file descriptor
 	//May or may not pad, append src+destination mac, etc. depending on wether or not "strict" is set
-	frame:[]u8 //Arbitrary list of bytes
 	log.infof("Writing payload to device file descriptor",dev_fd,"with strict mode set to ",strict)
-	log.infof("Does nothing TODO add tap writing")
 	error = "INF_WRT_OK"
-	bytes_written,wrt_err := os.write(dev_fd,frame)
+	log.infof("Written",len(payload),"bytes")
+	bytes_written,wrt_err := os.write(dev_fd,payload)
 	return error
 
 }

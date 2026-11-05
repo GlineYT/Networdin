@@ -4,7 +4,6 @@ import "core:log"
 import "core:slice"
 import "../tap"
 
-
 arp_request : struct #packed{
 	htype : u16be, //Hardware type
 	ptype : u16be, //Protocol type
@@ -30,6 +29,6 @@ handle_arp :: proc(frame:[]u8){
 	arp_request.spad = slice.to_type(frame[28:32],[4]u8)
 	arp_request.thad = slice.to_type(frame[32:38],[6]u8)
 	arp_request.tpad = slice.to_type(frame[38:42],[4]u8)
-	log.infof("ARP frame struct is now %v",arp_request)
-	log.infof("Testing tap writing with random input")
+	log.infof("ARP frame struct is now",arp_request)
+
 }
