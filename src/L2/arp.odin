@@ -3,6 +3,7 @@ package L2
 import "core:log"
 import "core:slice"
 import "../tap"
+import "../utils"
 
 arp_request : struct #packed{
 	htype : u16be, //Hardware type
@@ -19,6 +20,8 @@ arp_request : struct #packed{
 
 
 handle_arp :: proc(frame:[]u8){
+	MY_IP := utils.read_key("IP","")
+
 	log.infof("Handling ARP")
 	arp_request.htype = slice.to_type(frame[14:16],u16be)
 	arp_request.ptype = slice.to_type(frame[16:18],u16be)
