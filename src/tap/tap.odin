@@ -9,6 +9,9 @@ Ifreq :: struct {
     name: [16]u8,
 }
 
+
+//IMPORTANT dev_fd is set once in open_tap (called from main) and never reassigned.
+//IMPORTANT All writes go through this fd. Do not reassign outside of initialization.
 dev_fd: ^os.File
 
 open_tap :: proc(dev_name: string) -> (file: ^os.File, ok: bool) {
@@ -61,13 +64,19 @@ open_tap :: proc(dev_name: string) -> (file: ^os.File, ok: bool) {
     return f, true
 }
 
-write_tap:: proc(payload:[]u8,strict:bool) -> (error:string) {
+write_tap:: proc(payload:[]u8,strict := true) -> (error:bool) {
 	//Writes arbitrary data through the provided file descriptor
-	//May or may not pad, append src+destination mac, etc. depending on wether or not "strict" is set
-	log.infof("Writing payload to device file descriptor",dev_fd,"with strict mode set to ",strict)
-	error = "INF_WRT_OK"
-	log.infof("Written",len(payload),"bytes")
+	//NOTE May or may not pad, append src+destination mac, etc. depending on wether or not "strict" is set
+
+	error = false
+
+	log.infof("Writing payload to device file descriptor %v with strict mode set to %v", dev_fd, strict)
+	log.infof("Written %d bytes", len(payload))
 	bytes_written,wrt_err := os.write(dev_fd,payload)
+
+	if wrt_err != nil{
+		error = true
+	}
 	return error
 
 }

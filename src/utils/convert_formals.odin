@@ -3,8 +3,9 @@ package utils
 import "core:log"
 import "core:strings"
 import "core:strconv"
+import "core:mem"
 
-//Some utility functions to convert formats
+// Some utility functions to convert formats and do serializing/deserializing work
 
 //Utility to convert ipv4
 convert_dd :: proc(raw: string) -> (converted: [4]u8, ok: bool) {
@@ -38,6 +39,7 @@ convert_dd :: proc(raw: string) -> (converted: [4]u8, ok: bool) {
     return converted, true
 }
 
+//Utility to convert mac
 convert_mac :: proc (raw: string) -> (converted:[6]u8,ok:bool){
  	log.info("Converting a colon seperated mac string")
 
@@ -68,4 +70,11 @@ convert_mac :: proc (raw: string) -> (converted:[6]u8,ok:bool){
     }
 
     return converted,true
+}
+
+//Utility to serialize a struct
+serialize_struct :: proc(s: ^$T) -> []u8 {
+    bytes := make([]u8, size_of(T), context.allocator)
+    mem.copy(raw_data(bytes), s, size_of(T))
+    return bytes
 }
