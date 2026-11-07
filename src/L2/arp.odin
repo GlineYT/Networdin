@@ -34,7 +34,8 @@ handle_arp :: proc(frame:[]u8){
 	arp_request.tpad = slice.to_type(frame[38:42],[4]u8)
 	log.infof("ARP frame struct is now %v",arp_request)
 
-	if arp_request.oper == 0x0001 {
+	// gratiutious ARP check
+	if arp_request.oper == 0x0001 && arp_request.tpad == utils.MY_IP && arp_request.spad != arp_request.tpad {
 		log.info("This is an ARP request, handling")
 		send_arp_response()
 	}
