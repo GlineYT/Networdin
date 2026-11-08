@@ -13,7 +13,7 @@ arp_cache_lookup :: proc(ip: [4]u8) -> (mac: [6]u8, ok: bool) {
 arp_cache_insert :: proc(ip: [4]u8, mac: [6]u8) {
     if existing, ok := arp_cache_lookup(ip); ok {
         if existing == mac {
-            log.debugf("ARP cache: %v → %v already present, no change", ip, mac)
+            log.infof("ARP cache: %v → %v already present, no change", ip, mac)
             return
         }
         ARP_CACHE[ip] = mac

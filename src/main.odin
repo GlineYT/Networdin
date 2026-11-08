@@ -5,14 +5,16 @@ import "./L2"
 import "./utils"
 import "core:os"
 import "core:log"
+import "core:fmt"
 
 
 main :: proc() {
 	logger: log.Logger
     if len(os.args) > 1 && os.args[1] == "-nl" {
         logger = log.nil_logger()
-    } else {
+    }else {
         logger = log.create_console_logger(.Debug)
+        log.debug("Created logger, logging ENABLED")
     }
     context.logger = logger
 

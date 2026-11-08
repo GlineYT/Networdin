@@ -34,7 +34,12 @@ handle_arp :: proc(frame:[]u8){
 	log.infof("ARP frame struct is now %v",arp_request)
 
 	// NOTE Learn the sender's MAC/IP regardless of wether or not the MAC is gratioutious
-	arp_cache_insert(arp_request.spad, arp_request.shad)
+	if arp_request.spad == utils.ZERO_IP {
+		    log.info("ARP sender IP is 0.0.0.0 (DAD probe), skipping cache insert")
+	}else{
+		arp_cache_insert(arp_request.spad, arp_request.shad)
+	}
+
 
 	// gratiutious ARP check
 	if arp_request.oper == 0x0001 && arp_request.tpad == utils.MY_IP && arp_request.spad != arp_request.tpad {

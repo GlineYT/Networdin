@@ -8,6 +8,9 @@ MY_IP : [4]u8
 MY_MAC : [6]u8
 
 
+//General constants
+ZERO_IP := [4]u8{0,0,0,0}
+
 set_constants :: proc (){
 	log.info("Loading config file")
     ok_load : bool
