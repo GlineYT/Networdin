@@ -83,7 +83,7 @@ send_arp_response :: proc() -> (ok:bool){
 	arp_response_frame := utils.serialize_struct(&arp_response) //serialize
 	write_error := tap.write_tap(arp_response_frame)
 
-	if write_error {
+	if !write_error {
 		log.error("failed sending ARP response")
 	}
 

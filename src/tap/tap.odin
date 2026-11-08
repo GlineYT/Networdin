@@ -3,7 +3,7 @@ package tap
 import "core:sys/linux"
 import "core:os"
 import "core:log"
-import "core:fmt"
+import "core:slice"
 
 Ifreq :: struct {
     name: [16]u8,
@@ -64,19 +64,32 @@ open_tap :: proc(dev_name: string) -> (file: ^os.File, ok: bool) {
     return f, true
 }
 
-write_tap:: proc(payload:[]u8,strict := true) -> (error:bool) {
-	//Writes arbitrary data through the provided file descriptor
-	//NOTE May or may not pad, append src+destination mac, etc. depending on wether or not "strict" is set
+write_tap :: proc(payload: []u8, strict := true) -> (ok: bool) {
+    // Writes arbitrary data through dev_fd.
+    // If strict, pads frames smaller than 60 bytes to 60 with zeros.
+    ok = true
 
-	error = false
+    if strict && len(payload) < 60 {
+        log.info("Strict mode enabled, frame < 60 bytes; padding to 60")
+        padded: [60]u8 = {}
+        copy(padded[:], payload)
 
-	log.infof("Writing payload to device file descriptor %v with strict mode set to %v", dev_fd, strict)
-	log.infof("Written %d bytes", len(payload))
-	bytes_written,wrt_err := os.write(dev_fd,payload)
+        bytes_written, err := os.write(dev_fd, padded[:])
+        if err != nil {
+            log.errorf("write_tap with strict mode ENABLED failed: %v", err)
+            ok = false
+            return
+        }
+        log.infof("Wrote %d bytes (padded to 60)", bytes_written)
+        return
+    }
 
-	if wrt_err != nil{
-		error = true
-	}
-	return error
-
+    bytes_written, err := os.write(dev_fd, payload)
+    if err != nil {
+        log.errorf("write_tap failed: %v", err)
+        ok = false
+        return ok
+    }
+    log.infof("Wrote %d bytes", bytes_written)
+    return true
 }
