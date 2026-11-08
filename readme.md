@@ -12,7 +12,7 @@ There is a ```conf.ini``` file under ```/src/config``` it stores a pre-set ip an
 
 ### Logging
 
-If you find logs to be disruptive, flooding the command line, or otherwise unwanted, there will be a feature to later disable them in the config file.
+If you find logs to be disruptive, flooding the command line, or otherwise unwanted, run the executable with the "-nl" option.
 
 ### Note to contributors
 
