@@ -19,46 +19,46 @@ open_tap :: proc(dev_name: string) -> (file: ^os.File, ok: bool) {
     IFF_NO_PI :: 0x1000
     TUNSETIFF :: 0x400454CA
 
-    fmt.println(">>> open_tap: starting")
-    log.info("Opening /dev/net/tun...")
+    log.info("Open_tap: starting")
+    log.infof("Opening %s",dev_name)
 
     f, err := os.open(dev_name, os.O_RDWR)
     if err != nil {
-        log.errorf(">>> os.open failed: %v", err)
-        fmt.println(">>> os.open FAILED")
+        log.errorf("os.open failed: %v", err)
+        log.error("os.open FAILED")
         return nil, false
     }
 
-    fmt.println(">>> os.open succeeded")
+    log.info("os.open succeeded")
     raw_fd := os.fd(f)
-    fmt.printfln(">>> raw_fd = %v", raw_fd)
+    log.infof("raw_fd = %v", raw_fd)
 
-    fmt.println(">>> Building ifreq...")
+    log.infof("Building ifreq...")
     ifr: Ifreq
     copy(ifr.name[:], "tap0")
-    fmt.printfln(">>> ifr.name = %s", string(ifr.name[:]))
+    log.infof(">>> ifr.name = %s", string(ifr.name[:]))
 
     flags_ptr := cast(^u16)(uintptr(&ifr) + 16)
     flags_ptr^ = IFF_TAP | IFF_NO_PI
-    fmt.printfln(">>> flags written: 0x%X", flags_ptr^)
+    log.infof(">>> flags written: 0x%X", flags_ptr^)
 
     linux_fd := linux.Fd(raw_fd)
-    fmt.printfln(">>> linux_fd = %v", linux_fd)
-    fmt.printfln(">>> TUNSETIFF = 0x%X", TUNSETIFF)
-    fmt.printfln(">>> calling ioctl...")
+    log.infof("linux_fd = %v", linux_fd)
+    log.infof("TUNSETIFF = 0x%X", TUNSETIFF)
+    log.infof("calling ioctl...")
 
     result := linux.ioctl(linux_fd, TUNSETIFF, uintptr(&ifr))
 
-    fmt.printfln(">>> ioctl returned: %v", result)
+    log.infof("ioctl returned: %v", result)
     log.infof("ioctl result: %v", result)
 
     if result < 0 {
-        log.errorf(">>> ioctl failed with %v", result)
+        log.errorf("ioctl failed with %v", result)
         os.close(f)
         return nil, false
     }
 
-    fmt.println(">>> TAP device configured successfully!")
+    log.infof("TAP device configured successfully!")
     log.infof("TAP device opened: fd=%v", raw_fd)
     dev_fd = f
     return f, true

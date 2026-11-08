@@ -8,8 +8,13 @@ import "core:log"
 
 
 main :: proc() {
-    context.logger = log.create_console_logger(.Debug)
-    log.debug("Created logger")
+	if len(os.args) > 1 && os.args[1] == "-nl" { //-nl for "no log"
+		context.logger = log.nil_logger()
+	} else {
+ 		context.logger = log.create_console_logger(.Debug)
+ 	log.debug("Created logger and starting networdin with logging ENABLED")
+	}
+  	log.infof("passed args %v",os.args) // Runs after context.logger is set, so respects no_log
     log.info("Initializing stack")
 
     utils.set_constants()
